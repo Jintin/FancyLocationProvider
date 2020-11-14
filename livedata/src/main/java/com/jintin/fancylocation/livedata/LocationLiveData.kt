@@ -23,6 +23,12 @@ class LocationLiveData(
         LocationListener()
     }
 
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
+    override fun onActive() {
+        super.onActive()
+        requestLocationUpdates()
+    }
+
     override fun onInactive() {
         super.onInactive()
         removeLocationUpdates()
@@ -31,13 +37,11 @@ class LocationLiveData(
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
     override fun observe(owner: LifecycleOwner, observer: Observer<in LocationData>) {
         super.observe(owner, observer)
-        requestLocationUpdates()
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
     override fun observeForever(observer: Observer<in LocationData>) {
         super.observeForever(observer)
-        requestLocationUpdates()
     }
 
     private fun removeLocationUpdates() {
