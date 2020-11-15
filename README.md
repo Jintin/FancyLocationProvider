@@ -3,7 +3,7 @@
 [![CircleCI](https://circleci.com/gh/Jintin/FancyLocationProvider.svg?style=shield)](https://circleci.com/gh/Jintin/FancyLocationProvider)
 [![jitpack](https://jitpack.io/v/Jintin/FancyLocationProvider.svg)](https://jitpack.io/#Jintin/FancyLocationProvider)
 
-Wrapper of FusedLocationProviderClient for Android to support modern usage like LiveData.
+Wrapper of FusedLocationProviderClient for Android to support modern usage like LiveData or Flow.
 
 ## Install
 
@@ -43,6 +43,7 @@ locationLiveData.observe(this) {
 
 ```kotlin
 val locationFlow = LocationFlow(application, locationRequest)
+
 // check for the location permission first
 // should inside coroutine
 locationFlow.get().collect {
