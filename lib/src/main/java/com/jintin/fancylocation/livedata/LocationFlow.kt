@@ -1,7 +1,6 @@
 package com.jintin.fancylocation.livedata
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Looper
 import androidx.annotation.RequiresPermission
@@ -63,7 +62,6 @@ class LocationFlow(
             }
         }
 
-        @SuppressLint("MissingPermission")
         override fun onLocationAvailability(availability: LocationAvailability?) {
             if (availability?.isLocationAvailable == false) {
                 setValue(LocationData.Fail)
