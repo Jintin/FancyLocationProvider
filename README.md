@@ -3,7 +3,7 @@
 [![CircleCI](https://circleci.com/gh/Jintin/FancyLocationProvider.svg?style=shield)](https://circleci.com/gh/Jintin/FancyLocationProvider)
 [![jitpack](https://jitpack.io/v/Jintin/FancyLocationProvider.svg)](https://jitpack.io/#Jintin/FancyLocationProvider)
 
-Wrapper of FusedLocationProviderClient for Android to support modern usage like LiveData
+Wrapper of FusedLocationProviderClient for Android to support modern usage like LiveData or Flow.
 
 ## Install
 
@@ -13,6 +13,8 @@ implementation 'com.github.jintin:FancyLocationProvider:1.0'
 ```
 
 ## Usage
+
+### LiveData
 Here is an example of how you can create a `LocationLiveData` in `ViewModel` layer, just provide `Context` and the `LocationRequest` with your own config.
 ```kotlin
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -29,6 +31,22 @@ And here is how you observe the update on `View` layer.
 ```kotlin
 // check for the location permission first
 locationLiveData.observe(this) {
+    when (it) {
+        is LocationData.Success -> // get location by "it.location"
+        is LocationData.Fail -> // Fail to get location
+    }
+}
+
+```
+
+### Flow
+
+```kotlin
+val locationFlow = LocationFlow(application, locationRequest)
+
+// check for the location permission first
+// should inside coroutine
+locationFlow.get().collect {
     when (it) {
         is LocationData.Success -> // get location by "it.location"
         is LocationData.Fail -> // Fail to get location

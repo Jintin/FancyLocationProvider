@@ -5,16 +5,19 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Looper
 import androidx.annotation.RequiresPermission
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import com.google.android.gms.location.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.runBlocking
 
-class LocationLiveData(
+@ExperimentalCoroutinesApi
+class LocationFlow(
     private val context: Context,
     private val locationRequest: LocationRequest
-) : LiveData<LocationData>() {
-
+) {
     private val locationProvider by lazy {
         LocationServices.getFusedLocationProviderClient(context)
     }
@@ -22,26 +25,22 @@ class LocationLiveData(
     private val locationListener by lazy {
         LocationListener()
     }
+    private var scope: ProducerScope<LocationData>? = null
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
-    override fun onActive() {
-        super.onActive()
+    fun get(): Flow<LocationData> = channelFlow {
         requestLocationUpdates()
+        try {
+            scope = this
+            awaitCancellation()
+        } finally {
+            scope = null
+            removeLocationUpdates()
+        }
     }
 
-    override fun onInactive() {
-        super.onInactive()
-        removeLocationUpdates()
-    }
-
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
-    override fun observe(owner: LifecycleOwner, observer: Observer<in LocationData>) {
-        super.observe(owner, observer)
-    }
-
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
-    override fun observeForever(observer: Observer<in LocationData>) {
-        super.observeForever(observer)
+    private fun setValue(value: LocationData) = runBlocking {
+        scope?.channel?.send(value)
     }
 
     private fun removeLocationUpdates() {
@@ -60,16 +59,15 @@ class LocationLiveData(
     inner class LocationListener : LocationCallback() {
         override fun onLocationResult(result: LocationResult?) {
             result?.lastLocation?.let {
-                value = LocationData.Success(it)
+                setValue(LocationData.Success(it))
             }
         }
 
         @SuppressLint("MissingPermission")
         override fun onLocationAvailability(availability: LocationAvailability?) {
             if (availability?.isLocationAvailable == false) {
-                value = LocationData.Fail
+                setValue(LocationData.Fail)
             }
         }
     }
-
 }

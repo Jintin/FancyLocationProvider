@@ -4,7 +4,7 @@ plugins {
     id 'com.github.dcendents.android-maven'
 }
 
-group='com.github.jintin'
+group = 'com.github.jintin'
 
 android {
     compileSdkVersion 30
@@ -38,6 +38,7 @@ android {
 dependencies {
 
     implementation 'com.google.android.gms:play-services-location:17.1.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.3.2'
