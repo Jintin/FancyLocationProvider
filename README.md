@@ -9,7 +9,15 @@ Wrapper of FusedLocationProviderClient for Android to support modern usage like 
 
 With setup of [Jitpack](https://jitpack.io/) first, than add dependency in your build.gradle
 ```groovy
-implementation 'com.github.jintin:FancyLocationProvider:1.1.0'
+allprojects {
+  repositories {
+    ...
+    maven { url 'https://jitpack.io' }
+  }
+}
+dependencies {
+  implementation 'com.github.jintin:FancyLocationProvider:1.1.0'
+}
 ```
 
 ## Usage
