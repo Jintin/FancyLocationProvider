@@ -9,7 +9,7 @@ android {
     buildToolsVersion "30.0.2"
 
     defaultConfig {
-        applicationId "com.jintin.fancylocation"
+        applicationId "com.jintin.fancylocation.app"
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
@@ -35,6 +35,7 @@ android {
 
 dependencies {
     implementation project(':lib')
+
 //    implementation 'com.github.jintin:FancyLocationProvider:1.0'
     implementation 'com.google.android.gms:play-services-location:17.1.0'
     implementation 'androidx.activity:activity-ktx:1.1.0'

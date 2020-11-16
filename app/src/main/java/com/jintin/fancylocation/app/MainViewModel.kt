@@ -1,10 +1,10 @@
-package com.jintin.fancylocation
+package com.jintin.fancylocation.app
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import com.google.android.gms.location.LocationRequest
-import com.jintin.fancylocation.livedata.LocationFlow
-import com.jintin.fancylocation.livedata.LocationLiveData
+import com.jintin.fancylocation.LocationFlow
+import com.jintin.fancylocation.LocationLiveData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -14,8 +14,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .setFastestInterval(3000)
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
 
+
     @ExperimentalCoroutinesApi
     val locationFlow = LocationFlow(application, locationRequest)
-
     val locationLiveData = LocationLiveData(application, locationRequest)
+
+//    // we can also provide custom vendor by create your own LocationProvider
+//    private val locationProvider: ILocationProvider = LocationProvider(application, locationRequest)
+//
+//    @ExperimentalCoroutinesApi
+//    val locationFlow = locationProvider.asFlow()
+//    val locationLiveData = locationProvider.asLiveData()
+
+
 }
