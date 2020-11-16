@@ -6,8 +6,9 @@ import android.os.Looper
 import androidx.annotation.RequiresPermission
 import com.google.android.gms.location.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.runBlocking
@@ -24,22 +25,20 @@ class LocationFlow(
     private val locationListener by lazy {
         LocationListener()
     }
-    private var scope: ProducerScope<LocationData>? = null
+    private var sendChannel: SendChannel<LocationData>? = null
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
     fun get(): Flow<LocationData> = channelFlow {
         requestLocationUpdates()
-        try {
-            scope = this
-            awaitCancellation()
-        } finally {
-            scope = null
+        sendChannel = this.channel
+        awaitClose {
+            sendChannel = null
             removeLocationUpdates()
         }
     }
 
     private fun setValue(value: LocationData) = runBlocking {
-        scope?.channel?.send(value)
+        sendChannel?.send(value)
     }
 
     private fun removeLocationUpdates() {
