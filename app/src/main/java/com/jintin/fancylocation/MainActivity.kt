@@ -7,7 +7,6 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.jintin.fancylocation.livedata.LocationData
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import permissions.dispatcher.NeedsPermission

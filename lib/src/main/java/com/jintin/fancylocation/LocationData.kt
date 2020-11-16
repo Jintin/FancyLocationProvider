@@ -1,4 +1,4 @@
-package com.jintin.fancylocation.livedata
+package com.jintin.fancylocation
 
 import android.location.Location
 
