@@ -17,7 +17,7 @@ allprojects {
 }
 ```
 
-Add dependency in your module `build.gradle`:
+Then add dependency in your module `build.gradle`:
 ```groovy
 dependencies {
   implementation 'com.github.jintin:FancyLocationProvider:1.1.0'
