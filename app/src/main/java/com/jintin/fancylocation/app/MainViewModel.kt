@@ -1,8 +1,10 @@
-package com.jintin.fancylocation
+package com.jintin.fancylocation.app
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import com.google.android.gms.location.LocationRequest
+import com.jintin.fancylocation.LocationFlow
+import com.jintin.fancylocation.LocationLiveData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {

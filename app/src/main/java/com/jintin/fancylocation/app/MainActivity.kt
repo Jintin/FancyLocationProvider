@@ -1,4 +1,4 @@
-package com.jintin.fancylocation
+package com.jintin.fancylocation.app
 
 import android.Manifest
 import android.os.Bundle
@@ -7,6 +7,10 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.jintin.fancylocation.LocationData
+import com.jintin.fancylocation.R
+import com.jintin.fancylocation.observeLocationWithPermissionCheck
+import com.jintin.fancylocation.onRequestPermissionsResult
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import permissions.dispatcher.NeedsPermission
