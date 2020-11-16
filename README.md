@@ -67,6 +67,61 @@ locationFlow.get().collect {
 
 ```
 
+## Custom Location Provider
+FancyLocationProvider using GMS as the default location provider as it serve the most use case.
+But you can also used it with any other provider you want like Huawei HMS. Just create the custom provider implement the `ILocationProvider` interface like this:
+```kotlin
+class LocationProvider(
+    private val context: Context,
+    private val locationRequest: LocationRequest
+) : ILocationProvider {
+
+    private val client by lazy {
+        LocationServices.getFusedLocationProviderClient(context)
+    }
+    private val locationListener by lazy {
+        LocationListener()
+    }
+    private var locationObserver: ILocationObserver? = null
+
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
+    override fun requestLocationUpdates(locationObserver: ILocationObserver) {
+        this.locationObserver = locationObserver
+        client.requestLocationUpdates(
+            locationRequest,
+            locationListener,
+            Looper.getMainLooper()
+        )
+    }
+
+    override fun removeLocationUpdates() {
+        client.removeLocationUpdates(locationListener)
+    }
+
+    inner class LocationListener : LocationCallback() {
+        override fun onLocationResult(result: LocationResult?) {
+            result?.lastLocation?.let {
+                locationObserver?.onLocationResult(it)
+            }
+        }
+
+        override fun onLocationAvailability(availability: LocationAvailability?) {
+            if (availability?.isLocationAvailable == false) {
+                locationObserver?.onLocationFailed()
+            }
+        }
+    }
+}
+```
+Then you can create the custom provider and transform it into LiveData or Flow.
+```kotlin
+private val locationProvider: ILocationProvider = LocationProvider(context, locationRequest)
+
+@ExperimentalCoroutinesApi
+val locationFlow: LocationFlow = locationProvider.asFlow()
+val locationLiveData: LocationLiveData = locationProvider.asLiveData()
+```
+
 ## Contributing
 Bug reports and pull requests are welcome on GitHub at [https://github.com/Jintin/FancyLocationProvider](https://github.com/Jintin/FancyLocationProvider).
 
