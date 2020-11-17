@@ -15,34 +15,32 @@ import kotlinx.coroutines.runBlocking
 @ExperimentalCoroutinesApi
 class LocationFlow(
     private val locationProvider: ILocationProvider
-) : ILocationObserver {
+) {
 
     constructor(
         context: Context,
         locationRequest: LocationRequest
     ) : this(LocationProvider(context, locationRequest))
 
-    private var sendChannel: SendChannel<LocationData>? = null
-
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
     fun get(): Flow<LocationData> = channelFlow {
-        locationProvider.requestLocationUpdates(this@LocationFlow)
-        sendChannel = this.channel
+        locationProvider.requestLocationUpdates(object : ILocationObserver {
+            override fun onLocationResult(location: Location) {
+                setValue(channel, LocationData.Success(location))
+            }
+
+            override fun onLocationFailed() {
+                setValue(channel, LocationData.Fail)
+            }
+
+        })
         awaitClose {
-            sendChannel = null
             locationProvider.removeLocationUpdates()
         }
     }
 
-    private fun setValue(value: LocationData) = runBlocking {
-        sendChannel?.send(value)
-    }
-
-    override fun onLocationResult(location: Location) {
-        setValue(LocationData.Success(location))
-    }
-
-    override fun onLocationFailed() {
-        setValue(LocationData.Fail)
-    }
+    private fun setValue(sendChannel: SendChannel<LocationData>, value: LocationData) =
+        runBlocking {
+            sendChannel.send(value)
+        }
 }
