@@ -11,7 +11,9 @@ import com.google.android.gms.location.LocationRequest
 
 class LocationLiveData(
     private val locationProvider: ILocationProvider
-) : LiveData<LocationData>(), ILocationObserver {
+) : LiveData<LocationData>() {
+
+    private val locationObserver = LocationObserver()
 
     constructor(
         context: Context,
@@ -21,7 +23,7 @@ class LocationLiveData(
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
     override fun onActive() {
         super.onActive()
-        locationProvider.requestLocationUpdates(this)
+        locationProvider.requestLocationUpdates(locationObserver)
     }
 
     override fun onInactive() {
@@ -42,12 +44,13 @@ class LocationLiveData(
         super.observeForever(observer)
     }
 
-    override fun onLocationResult(location: Location) {
-        value = LocationData.Success(location)
-    }
+    private inner class LocationObserver : ILocationObserver {
+        override fun onLocationResult(location: Location) {
+            value = LocationData.Success(location)
+        }
 
-    override fun onLocationFailed() {
-        value = LocationData.Fail
+        override fun onLocationFailed() {
+            value = LocationData.Fail
+        }
     }
-
 }

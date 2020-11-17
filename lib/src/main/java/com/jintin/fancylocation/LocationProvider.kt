@@ -11,18 +11,17 @@ class LocationProvider(
     private val locationRequest: LocationRequest
 ) : ILocationProvider {
 
-    private val fusedLocationProviderClient by lazy {
+    private val locationProviderClient by lazy {
         LocationServices.getFusedLocationProviderClient(context)
     }
     private val locationListener by lazy {
         LocationListener()
     }
-    private var locationObserver: ILocationObserver? = null
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
     override fun requestLocationUpdates(locationObserver: ILocationObserver) {
-        this.locationObserver = locationObserver
-        fusedLocationProviderClient.requestLocationUpdates(
+        locationListener.locationObserver = locationObserver
+        locationProviderClient.requestLocationUpdates(
             locationRequest,
             locationListener,
             Looper.getMainLooper()
@@ -30,10 +29,12 @@ class LocationProvider(
     }
 
     override fun removeLocationUpdates() {
-        fusedLocationProviderClient.removeLocationUpdates(locationListener)
+        locationProviderClient.removeLocationUpdates(locationListener)
     }
 
-    inner class LocationListener : LocationCallback() {
+    private class LocationListener : LocationCallback() {
+        var locationObserver: ILocationObserver? = null
+
         override fun onLocationResult(result: LocationResult?) {
             result?.lastLocation?.let {
                 locationObserver?.onLocationResult(it)
