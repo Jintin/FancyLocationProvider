@@ -1,4 +1,4 @@
-package com.jintin.fancylocation.livedata
+package com.jintin.fancylocation.app
 
 import org.junit.Test
 
