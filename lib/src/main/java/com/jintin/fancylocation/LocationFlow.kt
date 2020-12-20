@@ -23,6 +23,7 @@ class LocationFlow(
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
     fun get(): Flow<LocationData> = channelFlow {
+        channel.sendBlocking(LocationData.Loading)
         locationProvider.requestLocationUpdates(object : ILocationObserver {
             override fun onLocationResult(location: Location) {
                 channel.sendBlocking(LocationData.Success(location))

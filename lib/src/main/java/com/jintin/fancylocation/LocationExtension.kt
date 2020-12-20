@@ -10,3 +10,7 @@ fun ILocationProvider.asLiveData(): LocationLiveData {
 fun ILocationProvider.asFlow(): LocationFlow {
     return LocationFlow(this)
 }
+
+fun ILocationProvider.asStateFlow(): LocationStateFlow {
+    return LocationStateFlow(this)
+}

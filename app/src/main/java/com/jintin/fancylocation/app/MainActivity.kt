@@ -19,11 +19,12 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val TYPE_LIVEDATA = 0
         const val TYPE_FLOW = 1
+        const val TYPE_STATEFLOW = 2
     }
 
-    private val mainViewModel by viewModels<MainViewModel>()
+    private val viewModel by viewModels<MainViewModel>()
 
-    private val type = TYPE_FLOW
+    private val type = TYPE_STATEFLOW
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         when (type) {
             TYPE_LIVEDATA -> liveDataObserve()
             TYPE_FLOW -> flowObserve()
+            TYPE_STATEFLOW -> stateFlowObserve()
         }
     }
 
@@ -51,23 +53,29 @@ class MainActivity : AppCompatActivity() {
     private fun flowObserve() {
         lifecycleScope.launch {
             @Suppress("EXPERIMENTAL_API_USAGE")
-            mainViewModel.locationFlow.get().collect {
-                updateUI(it)
-            }
+            viewModel.locationFlow.get().collect(::updateUI)
+        }
+    }
+
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
+    private fun stateFlowObserve() {
+        lifecycleScope.launch {
+            viewModel.locationStateFlow.start()
+            viewModel.locationStateFlow.value.collect(::updateUI)
         }
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
     private fun liveDataObserve() {
-        mainViewModel.locationLiveData.observe(this) {
-            updateUI(it)
-        }
+        viewModel.locationLiveData.observe(this, ::updateUI)
     }
 
     private fun updateUI(locationData: LocationData) {
         findViewById<TextView>(R.id.location).text = when (locationData) {
+            LocationData.Init -> "Init state"
+            LocationData.Loading -> "Start loading"
+            LocationData.Fail -> "Fail to get location"
             is LocationData.Success -> locationData.location.toString()
-            is LocationData.Fail -> "Fail to get location"
         }
     }
 }
