@@ -8,6 +8,7 @@ import com.google.android.gms.location.LocationRequest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 
@@ -23,14 +24,14 @@ class LocationFlow(
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
     fun get(): Flow<LocationData> = channelFlow {
-        channel.sendBlocking(LocationData.Loading)
+        channel.trySendBlocking(LocationData.Loading)
         locationProvider.requestLocationUpdates(object : ILocationObserver {
             override fun onLocationResult(location: Location) {
-                channel.sendBlocking(LocationData.Success(location))
+                channel.trySendBlocking(LocationData.Success(location))
             }
 
             override fun onLocationFailed() {
-                channel.sendBlocking(LocationData.Fail)
+                channel.trySendBlocking(LocationData.Fail)
             }
         })
         awaitClose {

@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     private val viewModel by viewModels<MainViewModel>()
 
-    private val type = TYPE_STATEFLOW
+    private val type = TYPE_FLOW
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +37,10 @@ class MainActivity : AppCompatActivity() {
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
-    ) = onRequestPermissionsResult(requestCode, grantResults)
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        onRequestPermissionsResult(requestCode, grantResults)
+    }
 
     @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
@@ -52,7 +55,6 @@ class MainActivity : AppCompatActivity() {
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
     private fun flowObserve() {
         lifecycleScope.launch {
-            @Suppress("EXPERIMENTAL_API_USAGE")
             viewModel.locationFlow.get().collect(::updateUI)
         }
     }
