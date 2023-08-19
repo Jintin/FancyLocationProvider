@@ -35,14 +35,14 @@ class LocationProvider(
     private class LocationListener : LocationCallback() {
         var locationObserver: ILocationObserver? = null
 
-        override fun onLocationResult(result: LocationResult?) {
-            result?.lastLocation?.let {
+        override fun onLocationResult(result: LocationResult) {
+            result.lastLocation?.let {
                 locationObserver?.onLocationResult(it)
             }
         }
 
-        override fun onLocationAvailability(availability: LocationAvailability?) {
-            if (availability?.isLocationAvailable == false) {
+        override fun onLocationAvailability(availability: LocationAvailability) {
+            if (!availability.isLocationAvailable) {
                 locationObserver?.onLocationFailed()
             }
         }
