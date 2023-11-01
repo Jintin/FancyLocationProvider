@@ -120,7 +120,6 @@ Then you can create the custom provider and transform it into LiveData or Flow.
 ```kotlin
 private val locationProvider: ILocationProvider = LocationProvider(context, locationRequest)
 
-@ExperimentalCoroutinesApi
 val locationFlow: LocationFlow = locationProvider.asFlow()
 val locationLiveData: LocationLiveData = locationProvider.asLiveData()
 ```
